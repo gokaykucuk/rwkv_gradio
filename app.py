@@ -285,4 +285,4 @@ demo = gr.TabbedInterface(
 )
 
 demo.queue()
-demo.launch(share=False)
+demo.launch(share=True)
