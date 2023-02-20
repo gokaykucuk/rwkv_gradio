@@ -56,12 +56,12 @@ title = "RWKV-4 (1.5b Instruct Test 2)"
 # [Vram usage: 15.0GB]
 # [File size: 28.0GB]
 
-# config = {
-#     "path": "https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230204-7324.pth",
-#     **quantized
-# }
+config = {
+    "path": "https://huggingface.co/BlinkDL/rwkv-4-pile-14b/resolve/main/RWKV-4-Pile-14B-20230204-7324.pth",
+    **quantized
+}
 
-# title = "RWKV-4 (14b Quantized)"
+title = "RWKV-4 (14b Quantized)"
 
 
 # RWKV 14B pre-quantized (latest as of feb 9)
