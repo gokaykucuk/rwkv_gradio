@@ -234,7 +234,7 @@ Best Full Response:
 
 iface = gr.Interface(
     fn=infer,
-    description=f'''<h3>Generative and Question/Answer</h3>{desc}{thanks}''',
+    description=f'''<h3>Generative and Question/Answer</h3>''',
     allow_flagging="never",
     inputs=[
         gr.Textbox(lines=20, label="Prompt"),  # prompt
@@ -253,7 +253,7 @@ iface = gr.Interface(
 
 chatiface = gr.Interface(
     fn=chat,
-    description=f'''<h3>Chatbot</h3><h4>Refresh page or change name to reset memory context</h4>{desc}{thanks}''',
+    description=f'''<h3>Chatbot</h3><h4>Refresh page or change name to reset memory context</h4>''',
     allow_flagging="never",
     inputs=[
         gr.Textbox(lines=5, label="Message"),  # prompt
