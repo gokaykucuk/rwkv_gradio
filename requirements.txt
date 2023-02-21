@@ -4,3 +4,4 @@ torch
 inquirer
 rwkvstic
 gradio>=3.17.1
+jupyter
