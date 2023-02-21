@@ -4,7 +4,7 @@ import torch
 quantized = {
     "mode": TORCH_QUANT,
     "runtimedtype": torch.bfloat16,
-    "useGPU": torch.cuda.is_available(),
+    "useGPU": True,
     "chunksize": 32,  # larger = more accurate, but more memory (and slower)
     "target": 24  # your gpu max size, excess vram offloaded to cpu
 }
