@@ -28,18 +28,13 @@ import gc
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-desc = '''<p>RNN with Transformer-level LLM Performance (<a href='https://github.com/BlinkDL/RWKV-LM'>github</a>).
-    According to the author: "It combines the best of RNN and transformers - great performance, fast inference, saves VRAM, fast training, "infinite" ctx_len, and free sentence embedding."'''
-
-thanks = '''<p>Thanks to <a href='https://www.rftcapital.com'>RFT Capital</a> for donating compute capability for our experiments. Additional thanks to the author of the <a href="https://github.com/harrisonvanderbyl/rwkvstic">rwkvstic</a> library.</p>'''
-
 
 def to_md(text):
     return text.replace("\n", "<br />")
 
 
 def get_model():
-    model = None
+    global model
     model = RWKV(
         **config
     )
@@ -61,9 +56,9 @@ def infer(
 ):
     global model
 
-    if model == None:
+    if model is None:
         gc.collect()
-        if (DEVICE == "cuda"):
+        if DEVICE == "cuda":
             torch.cuda.empty_cache()
         model = get_model()
 
@@ -71,7 +66,6 @@ def infer(
     temperature = float(temperature)
     top_p = float(top_p)
     stop = [x.strip(' ') for x in stop.split(',')]
-    seed = seed
 
     assert 1 <= max_new_tokens <= 384
     assert 0.0 <= temperature <= 1.0
@@ -84,7 +78,7 @@ def infer(
 
     # Clear model state for generative mode
     model.resetState()
-    if (mode == "Q/A"):
+    if mode == "Q/A":
         prompt = f"Ask Expert\n\nQuestion:\n{prompt}\n\nExpert Full Answer:\n"
 
     print(f"PROMPT ({datetime.now()}):\n-------\n{prompt}")
@@ -137,9 +131,9 @@ def chat(
 
     intro = ""
 
-    if model == None:
+    if model is None:
         gc.collect()
-        if (DEVICE == "cuda"):
+        if DEVICE == "cuda":
             torch.cuda.empty_cache()
         model = get_model()
 
@@ -168,7 +162,7 @@ def chat(
         history = [[], model.emptyState]
         print("reset chat state")
     else:
-        if (history[0][0][0].split(':')[0] != username):
+        if history[0][0][0].split(':')[0] != username:
             model.resetState()
             history = [[], model.emptyState]
             print("username changed, reset state")
@@ -179,7 +173,6 @@ def chat(
     max_new_tokens = int(max_new_tokens)
     temperature = float(temperature)
     top_p = float(top_p)
-    seed = seed
 
     assert 1 <= max_new_tokens <= 384
     assert 0.0 <= temperature <= 1.0
@@ -193,10 +186,10 @@ def chat(
     print(f"OUTPUT ({datetime.now()}):\n-------\n")
     # Load prompt
 
-    model.loadContext(newctx=intro+prompt)
+    model.loadContext(newctx=intro + prompt)
 
     out = model.forward(number=max_new_tokens, stopStrings=[
-                        "<|endoftext|>", username+":"], temp=temperature, top_p_usual=top_p, end_adj=end_adj)
+        "<|endoftext|>", username + ":"], temp=temperature, top_p_usual=top_p, end_adj=end_adj)
 
     generated_text = out["output"].lstrip("\n ")
     generated_text = generated_text.rstrip(username + ":")
@@ -239,7 +232,6 @@ Best Full Response:
         ''', "generative", 140, 0.85, 0.8, -3.5, "<|endoftext|>"]
 ]
 
-
 iface = gr.Interface(
     fn=infer,
     description=f'''<h3>Generative and Question/Answer</h3>{desc}{thanks}''',
@@ -251,7 +243,7 @@ iface = gr.Interface(
         gr.Slider(1, 256, value=40),  # max_tokens
         gr.Slider(0.0, 1.0, value=0.8),  # temperature
         gr.Slider(0.0, 1.0, value=0.85),  # top_p
-        gr.Slider(-99, 0.0, value=0.0, step=0.5, label="Reduce End of Text Probability"), # end_adj
+        gr.Slider(-99, 0.0, value=0.0, step=0.5, label="Reduce End of Text Probability"),  # end_adj
         gr.Textbox(lines=1, value="<|endoftext|>")  # stop
     ],
     outputs=gr.Textbox(label="Generated Output", lines=25),
@@ -271,7 +263,7 @@ chatiface = gr.Interface(
         gr.Slider(1, 256, value=60),  # max_tokens
         gr.Slider(0.0, 1.0, value=0.8),  # temperature
         gr.Slider(0.0, 1.0, value=0.85),  # top_p
-        gr.Slider(-99, 0.0, value=-2, step=0.5, label="Reduce End of Text Probability"), # end_adj
+        gr.Slider(-99, 0.0, value=-2, step=0.5, label="Reduce End of Text Probability"),  # end_adj
     ],
     outputs=[gr.Chatbot(label="Chat Log", color_map=(
         "green", "pink")), "state"],
